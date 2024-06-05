@@ -4,7 +4,7 @@ inputs:
   target-directory:
     description: 'The directory containing the Go code to be linted'
     required: true
-    default: '.'
+    default: 'cmd/'
 runs:
   using: 'composite'
   steps:
