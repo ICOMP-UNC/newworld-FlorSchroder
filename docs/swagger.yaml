@@ -1,0 +1,71 @@
+basePath: /
+host: localhost:3000
+info:
+  contact:
+    email: you@example.com
+  description: This is a sample server.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /analytics/average-delivery-time:
+    get:
+      consumes:
+      - application/json
+      description: get average delivery time data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: GetAverageDeliveryTime
+          schema:
+            type: string
+        "500":
+          description: Error
+          schema:
+            type: string
+      summary: Get average delivery time
+      tags:
+      - analytics
+  /analytics/most-expensive-sale:
+    get:
+      consumes:
+      - application/json
+      description: get most expensive sale data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: GetMostExpensiveSale
+          schema:
+            type: string
+        "500":
+          description: Error
+          schema:
+            type: string
+      summary: Get most expensive sale
+      tags:
+      - analytics
+  /market:
+    get:
+      consumes:
+      - application/json
+      description: get market summary data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: GetSummaryMarket
+          schema:
+            type: string
+        "500":
+          description: Error
+          schema:
+            type: string
+      summary: Get market summary
+      tags:
+      - market
+swagger: "2.0"
