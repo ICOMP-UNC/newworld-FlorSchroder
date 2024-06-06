@@ -16,7 +16,7 @@ my-project/
 │   │   └── controller.go
 │   └── models/
 │       └── model.go
-│   
+│
 │
 ├── docs/
 │   └── swagger_files.go
@@ -33,7 +33,7 @@ sudo apt install postgresql postgresql-contrib
 sudo service postgresql start
 // to check status
 sudo service postgresql status
-```         
+```
 Create database:
 <pre>(base) <font color="#8AE234"><b>florxha@florxha-Inspiron-7375</b></font>:<font color="#729FCF"><b>~</b></font>$ sudo -i -u postgres
 postgres@florxha-Inspiron-7375:~$ psql
@@ -48,11 +48,11 @@ postgres=# GRANT ALL PRIVILEGES ON DATABASE florxha_tp3 TO florxha;
 GRANT
 postgres=# \l+ florxha_tp3
                                                      List of databases
-    Name     |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace | Description 
+    Name     |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace | Description
 -------------+----------+----------+-------------+-------------+-----------------------+---------+------------+-------------
- florxha_tp3 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8577 kB | pg_default | 
-             |          |          |             |             | postgres=CTc/postgres+|         |            | 
-             |          |          |             |             | florxha=CTc/postgres  |         |            | 
+ florxha_tp3 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8577 kB | pg_default |
+             |          |          |             |             | postgres=CTc/postgres+|         |            |
+             |          |          |             |             | florxha=CTc/postgres  |         |            |
 (1 row)
 postgres=# exit
 postgres@florxha-Inspiron-7375:~$ exit
@@ -73,28 +73,28 @@ Type &quot;help&quot; for help.
 
 florxha_tp3=&gt; \dt
         List of relations
- Schema | Name  | Type  |  Owner  
+ Schema | Name  | Type  |  Owner
 --------+-------+-------+---------
  public | users | table | florxha
 (1 row)
 
 florxha_tp3=&gt; SELECT * FROM users;
- id | username | email | password 
+ id | username | email | password
 ----+----------+-------+----------
 (0 rows)
 
 florxha_tp3=&gt; SELECT * FROM users;
- id | username |        email        |  password   
+ id | username |        email        |  password
 ----+----------+---------------------+-------------
   1 | johndoe  | example@example.com | password123
 (1 row)
 
 florxha_tp3=&gt; SELECT * FROM users;
- id | username |        email        |  password   
+ id | username |        email        |  password
 ----+----------+---------------------+-------------
   1 | johndoe  | example@example.com | password123
   2 | flor     | flor@example.com    | flor123
 (2 rows)
 
-florxha_tp3=&gt; 
+florxha_tp3=&gt;
 </pre>
