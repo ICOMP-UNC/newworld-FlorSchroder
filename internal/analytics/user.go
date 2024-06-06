@@ -28,3 +28,21 @@ func AddUser(register models.Register) error {
 
 	return nil
 }
+
+func Login(login models.Login) error {
+	if dbPool == nil {
+		return errors.New("database pool is not initialized")
+	}
+
+	var userExists bool
+	err := dbPool.QueryRow(context.Background(), "SELECT EXISTS (SELECT 1 FROM users WHERE email = $1 AND password = $2)", login.Email, login.Password).Scan(&userExists)
+	if err != nil {
+		return err
+	}
+
+	if !userExists {
+		return errors.New("user does not exist or invalid credentials")
+	}
+
+	return nil
+}

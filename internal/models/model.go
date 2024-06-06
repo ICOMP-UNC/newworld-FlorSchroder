@@ -25,3 +25,9 @@ type Register struct {
 	Email    string `json:"email" validate:"required,email" example:"example@example.com"`
 	Password string `json:"password" validate:"required" example:"password123"`
 }
+
+type Login struct {
+	Username string `json:"username" validate:"required" example:"johndoe"`
+	Email    string `json:"email" validate:"required,email" example:"example@example.com"`
+	Password string `json:"password" validate:"required" example:"password123"`
+}

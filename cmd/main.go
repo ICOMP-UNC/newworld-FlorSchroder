@@ -50,6 +50,7 @@ func main() {
 	app.Get("/analytics/average-delivery-time", controllers.GetAverageDeliveryTime)
 
 	app.Post("/auth/register", controllers.Register)
+	app.Post("/auth/login", controllers.Login)
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
