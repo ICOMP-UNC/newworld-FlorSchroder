@@ -13,3 +13,15 @@ type MarketSummary struct {
 	MostExpensiveSale   Sale               `json:"most_expensive_sale"`
 	AverageDeliveryTime float64            `json:"average_delivery_time"`
 }
+
+type User struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type Register struct {
+	Username string `json:"username" validate:"required" example:"johndoe"`
+	Email    string `json:"email" validate:"required,email" example:"example@example.com"`
+	Password string `json:"password" validate:"required" example:"password123"`
+}

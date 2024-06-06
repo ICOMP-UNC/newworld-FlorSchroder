@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/analytics"
-
+	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -49,48 +49,26 @@ func GetAverageDeliveryTime(c *fiber.Ctx) error {
 	return c.SendString("GetAverageDeliveryTime")
 }
 
-// package controllers
+// Register godoc
+// @Summary Register
+// @Description register a new user
+// @Tags auth
+// @Param Register body models.Register true "User registration details"
+// @Accept  json
+// @Produce  json
+// @Success 201 {string} string "User added"
+// @Failure 500 {string} string "Bad server"
+// @Failure 400 {string} string "Bad request"
+// @Router /auth/register [post]
+func Register(c *fiber.Ctx) error {
+	var register models.Register
+	if err := c.BodyParser(&register); err != nil {
+		return c.Status(400).SendString("Bad request")
+	}
 
-// import (
-// 	"goApp/internal/analytics"
+	if err := analytics.AddUser(register); err != nil {
+		return c.Status(500).SendString("Bad server")
+	}
 
-// 	"github.com/gofiber/fiber/v2"
-// )
-
-// // @Summary Get summary market
-// // @Description Get summary market
-// // @Tags Market
-// // @Accept  json
-// // @Produce  json
-// // @Success 200 {object} MarketSummary
-// // @Router /market/summary [get]
-// func GetSummaryMarket(c *fiber.Ctx) error {
-// 	marketSummary, err := analytics.GetSummaryMarket()
-
-// 	if err != nil {
-// 		return c.Status(500).SendString("Error")
-// 	}
-// 	return c.Status(200).JSON(marketSummary)
-// }
-
-// // @Summary Get most expensive sale
-// // @Description Get most expensive sale
-// // @Tags Market
-// // @Accept  json
-// // @Produce  json
-// // @Success 200 {object} MostExpensiveSale
-// // @Router /market/expensive [get]
-// func GetMostExpensiveSale(c *fiber.Ctx) error {
-// 	return c.SendString("GetMostExpensiveSale")
-// }
-
-// // @Summary Get average delivery time
-// // @Description Get average delivery time
-// // @Tags Market
-// // @Accept  json
-// // @Produce  json
-// // @Success 200 {object} AverageDeliveryTime
-// // @Router /market/average [get]
-// func GetAverageDeliveryTime(c *fiber.Ctx) error {
-// 	return c.SendString("GetAverageDeliveryTime")
-// }
+	return c.Status(201).SendString("User added")
+}

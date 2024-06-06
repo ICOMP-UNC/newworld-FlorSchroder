@@ -1,4 +1,21 @@
 basePath: /
+definitions:
+  github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Register:
+    properties:
+      email:
+        example: example@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+      username:
+        example: johndoe
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
 host: localhost:3000
 info:
   contact:
@@ -49,6 +66,36 @@ paths:
       summary: Get most expensive sale
       tags:
       - analytics
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: register a new user
+      parameters:
+      - description: User registration details
+        in: body
+        name: Register
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Register'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User added
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Register
+      tags:
+      - auth
   /market:
     get:
       consumes:
