@@ -98,3 +98,15 @@ florxha_tp3=&gt; SELECT * FROM users;
 
 florxha_tp3=&gt;
 </pre>
+
+
+## Execution
+In console:
+```
+./run.sh
+```
+
+In browser to check endpoints:
+```
+http://127.0.0.1:3000/swagger/index.html
+```

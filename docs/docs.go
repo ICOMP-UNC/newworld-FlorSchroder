@@ -22,9 +22,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/analytics/average-delivery-time": {
+        "/admin/dashboard": {
             "get": {
-                "description": "get average delivery time data",
+                "description": "get dashboard data",
                 "consumes": [
                     "application/json"
                 ],
@@ -32,18 +32,33 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "analytics"
+                    "admin"
                 ],
-                "summary": "Get average delivery time",
+                "summary": "Get dashboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "GetAverageDeliveryTime",
+                        "description": "Dashboard data",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Error",
+                        "description": "Bad server",
                         "schema": {
                             "type": "string"
                         }
@@ -51,9 +66,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/analytics/most-expensive-sale": {
-            "get": {
-                "description": "get most expensive sale data",
+        "/auth/checkout": {
+            "post": {
+                "description": "checkout",
                 "consumes": [
                     "application/json"
                 ],
@@ -61,18 +76,42 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "analytics"
+                    "auth"
                 ],
-                "summary": "Get most expensive sale",
+                "summary": "Checkout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Order details",
+                        "name": "Order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Order"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "GetMostExpensiveSale",
+                        "description": "Order placed",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Message"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Error",
+                        "description": "Bad server",
                         "schema": {
                             "type": "string"
                         }
@@ -113,6 +152,207 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Bad server",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/offer": {
+            "post": {
+                "description": "add a new offer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Add offer",
+                "parameters": [
+                    {
+                        "description": "Offer details",
+                        "name": "Offer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Offer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JWT",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Bad server",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/offers": {
+            "get": {
+                "description": "get all offers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get offers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JWT",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Bad server",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/order/{id}": {
+            "patch": {
+                "description": "update order status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Update order status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Order status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order status updated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Bad server",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/orders/{id}": {
+            "get": {
+                "description": "get order status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get order status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order status",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }
@@ -171,35 +411,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/market": {
-            "get": {
-                "description": "get market summary data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "market"
-                ],
-                "summary": "Get market summary",
-                "responses": {
-                    "200": {
-                        "description": "GetSummaryMarket",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -222,6 +433,68 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "johndoe"
+                }
+            }
+        },
+        "github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Message": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
+        "github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Offer": {
+            "type": "object",
+            "required": [
+                "category",
+                "name",
+                "price",
+                "quantity"
+            ],
+            "properties": {
+                "category": {
+                    "description": "Category of the offer",
+                    "type": "string",
+                    "example": "food"
+                },
+                "name": {
+                    "description": "Name of the offer",
+                    "type": "string",
+                    "example": "meat"
+                },
+                "price": {
+                    "description": "Price of the offer",
+                    "type": "number",
+                    "example": 10.5
+                },
+                "quantity": {
+                    "description": "Quantity of the offer",
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Order": {
+            "type": "object"
+        },
+        "github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.OrderItem": {
+            "type": "object",
+            "required": [
+                "product_id",
+                "quantity"
+            ],
+            "properties": {
+                "product_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 10
                 }
             }
         },

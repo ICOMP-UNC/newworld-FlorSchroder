@@ -45,12 +45,16 @@ func main() {
 	// Inject the dbPool into your controllers as needed
 	analytics.SetDB(dbPool)
 
-	app.Get("/market", controllers.GetSummaryMarket)
-	app.Get("/analytics/most-expensive-sale", controllers.GetMostExpensiveSale)
-	app.Get("/analytics/average-delivery-time", controllers.GetAverageDeliveryTime)
+	app.Get("/auth/offers", controllers.GetOffers)
+	app.Get("/admin/dashboard", controllers.GetDashboard)
+	app.Get("/auth/orders/:id", controllers.GetOrderStatus)
 
 	app.Post("/auth/register", controllers.Register)
 	app.Post("/auth/login", controllers.Login)
+	app.Post("/auth/offer", controllers.AddOffer)
+	app.Post("/auth/checkout", controllers.Checkout)
+
+	app.Patch("/auth/order/:id", controllers.UpdateOrderStatus)
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 

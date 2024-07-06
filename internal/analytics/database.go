@@ -31,7 +31,23 @@ func InitDB(pool *pgxpool.Pool) error {
 		id SERIAL PRIMARY KEY,
 		username TEXT NOT NULL,
 		email TEXT NOT NULL UNIQUE,
-		password TEXT NOT NULL
+		password TEXT NOT NULL,
+		role TEXT NOT NULL,
+		jwt TEXT
+	);
+
+	CREATE TABLE IF NOT EXISTS offers (
+		id SERIAL PRIMARY KEY,
+		name TEXT NOT NULL,
+		quantity INT NOT NULL,
+		price FLOAT NOT NULL,
+		category TEXT NOT NULL
+	);
+
+	CREATE TABLE IF NOT EXISTS orders (
+		id SERIAL PRIMARY KEY,
+		items JSONB NOT NULL,
+		status TEXT NOT NULL
 	);
 	`)
 	if err != nil {
