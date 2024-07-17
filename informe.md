@@ -5,25 +5,59 @@ my-project/
 │   └── main.go
 │
 ├── internal/
-│   ├── analytics/
-│   │   ├── database.go
-│   │   ├── market.go
-│   │   ├── repository.go
-│   │   ├── service.go
-│   │   └── user.go
+│   ├── database/
+│   │   └── database.go
 │   │
-│   ├── controllers/
-│   │   └── controller.go
-│   └── models/
-│       └── model.go
-│
+│   ├── models/
+│   │   └── models.go
+│   │
+│   ├── services/
+│   │   └── user_service.go
+│   │
+│   ├── handlers/
+│   │   └── user_handler.go
+│   │
+│   └── routes/
+│       └── routes.go
 │
 ├── docs/
 │   └── swagger_files.go
 │
 ├── go.mod
 └── go.sum
+
 ```
+cmd/main.go:
+
+- Contains the main entry point of the application.
+- Initializes the server and configures routing.
+- Connects to and configures the database.
+
+internal/database/database.go:
+
+- Handles database connection and table initialization.
+- Separates the connection logic and database configuration.
+
+internal/models/models.go:
+
+- Defines the project's data structures.
+- Keeps all models in one place for easier management.
+
+internal/services/user_service.go:
+
+- Contains business logic for user management.
+- Performs CRUD operations and handles data validation.
+
+internal/handlers/user_handler.go:
+
+- Defines controllers for user-related endpoints.
+- Separates business logic from routing logic.
+
+internal/routes/routes.go:
+
+- Configures all application routes.
+- Facilitates the management and organization of routing.
+
 
 ## Postgress
 In your own console:

@@ -8,8 +8,9 @@ import (
 	"github.com/gofiber/swagger"
 
 	_ "github.com/ICOMP-UNC/newworld-FlorSchroder/docs"
-	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/analytics"
-	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/controllers"
+	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/database"
+	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/routes"
+	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/services"
 )
 
 // @title Swagger Example API
@@ -30,31 +31,23 @@ func main() {
 	}))
 
 	// Connect to the database
-	dbPool, err := analytics.ConnectDB()
+	dbPool, err := database.ConnectDB()
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 	defer dbPool.Close()
 
 	// Initialize the database
-	err = analytics.InitDB(dbPool)
+	err = database.InitDB(dbPool)
 	if err != nil {
 		log.Fatalf("Failed to initialize the database: %v", err)
 	}
 
 	// Inject the dbPool into your controllers as needed
-	analytics.SetDB(dbPool)
+	services.SetDB(dbPool)
 
-	app.Get("/auth/offers", controllers.GetOffers)
-	app.Get("/admin/dashboard", controllers.GetDashboard)
-	app.Get("/auth/orders/:id", controllers.GetOrderStatus)
-
-	app.Post("/auth/register", controllers.Register)
-	app.Post("/auth/login", controllers.Login)
-	app.Post("/auth/offer", controllers.AddOffer)
-	app.Post("/auth/checkout", controllers.Checkout)
-
-	app.Patch("/auth/order/:id", controllers.UpdateOrderStatus)
+	// Initialize the routes
+	routes.InitRoutes(app, dbPool)
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 

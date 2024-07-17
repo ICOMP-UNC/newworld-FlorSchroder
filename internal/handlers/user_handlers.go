@@ -1,10 +1,10 @@
-package controllers
+package handlers
 
 import (
 	"strconv"
 
-	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/analytics"
 	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/models"
+	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,7 +25,7 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Bad request")
 	}
 
-	if err := analytics.AddUser(register); err != nil {
+	if err := services.AddUser(register); err != nil {
 		return c.Status(500).SendString("Bad server")
 	}
 
@@ -49,7 +49,7 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Bad request")
 	}
 
-	token, err := analytics.Login(login)
+	token, err := services.Login(login)
 	if err != nil {
 		return c.Status(500).SendString("Bad server")
 	}
@@ -74,7 +74,7 @@ func AddOffer(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Bad request")
 	}
 
-	if err := analytics.AddOffer(offer); err != nil {
+	if err := services.AddOffer(offer); err != nil {
 		return c.Status(500).SendString("Bad server")
 	}
 
@@ -98,7 +98,7 @@ func GetOffers(c *fiber.Ctx) error {
 		return c.Status(401).SendString("Unauthorized")
 	}
 
-	offers, err := analytics.GetOffers(jwtToken)
+	offers, err := services.GetOffers(jwtToken)
 	if err != nil {
 		return c.Status(500).SendString("Bad server")
 	}
@@ -128,7 +128,7 @@ func Checkout(c *fiber.Ctx) error {
 		return c.Status(400).JSON(models.Message{Status: "Bad request"})
 	}
 
-	message, err := analytics.Checkout(order, jwtToken)
+	message, err := services.Checkout(order, jwtToken)
 	if err != nil {
 		return c.Status(500).JSON(models.Message{Status: "Bad server"})
 	}
@@ -153,7 +153,7 @@ func GetDashboard(c *fiber.Ctx) error {
 		return c.Status(401).SendString("Unauthorized")
 	}
 
-	dashboard, err := analytics.GetDashboard(jwtToken)
+	dashboard, err := services.GetDashboard(jwtToken)
 	if err != nil {
 		return c.Status(500).SendString("Bad server")
 	}
@@ -184,7 +184,7 @@ func GetOrderStatus(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Invalid order ID")
 	}
 
-	status, err := analytics.GetOrderStatus(id, jwtToken)
+	status, err := services.GetOrderStatus(id, jwtToken)
 	if err != nil {
 		return c.Status(500).SendString("Bad server")
 	}
@@ -221,7 +221,7 @@ func UpdateOrderStatus(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Bad request")
 	}
 
-	err = analytics.UpdateOrderStatus(id, status, jwtToken)
+	err = services.UpdateOrderStatus(id, status, jwtToken)
 	if err != nil {
 		return c.Status(500).SendString("Bad server")
 	}
