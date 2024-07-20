@@ -15,4 +15,5 @@ runs:
       shell: bash
       run: |
         cd ${{ inputs.target-directory }}
+        pwd
         go build -v .
