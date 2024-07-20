@@ -10,4 +10,4 @@ runs:
   steps:
     - name: Build
       shell: bash
-      run: go build -v ./src/
+      run: go build -v src
