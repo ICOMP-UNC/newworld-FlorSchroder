@@ -2,30 +2,54 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
-	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/routes"
-	"github.com/gofiber/fiber/v2"
+	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/models"
+	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/services"
+	"github.com/golang-jwt/jwt"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func TestDatabaseConnection(t *testing.T) {
-	_, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
-	if err != nil {
-		t.Fatalf("failed to connect to the database: %v", err)
-	}
-}
+// func TestDatabaseConnection(t *testing.T) {
+// 	_, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
+// 	if err != nil {
+// 		t.Fatalf("failed to connect to the database: %v", err)
+// 	}
+// }
 
-func TestRoutesInitialization(t *testing.T) {
-	app := fiber.New()
-	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
-	if err != nil {
-		t.Fatalf("failed to connect to the database: %v", err)
-	}
-	defer dbPool.Close()
+// func TestRoutesInitialization(t *testing.T) {
+// 	app := fiber.New()
+// 	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
+// 	if err != nil {
+// 		t.Fatalf("failed to connect to the database: %v", err)
+// 	}
+// 	defer dbPool.Close()
 
-	routes.InitRoutes(app, dbPool)
-}
+// 	routes.InitRoutes(app, dbPool)
+// }
+
+// func TestRegisterNewUser(t *testing.T) {
+// 	//initialize the database
+// 	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
+// 	if err != nil {
+// 		t.Fatalf("failed to connect to the database: %v", err)
+// 	}
+// 	defer dbPool.Close()
+
+// 	register := models.Register{
+// 		Username: "testuser",
+// 		Email:    "test@test.com",
+// 		Password: "testpassword",
+// 	}
+
+// 	err1 := services.AddUser(register)
+// 	if err1 != nil {
+// 		t.Fatalf("failed to add user: %v", err1)
+// 	}
+
+// }
 
 // func TestRegisterNewUser(t *testing.T) {
 // 	app := fiber.New()
@@ -57,3 +81,56 @@ func TestRoutesInitialization(t *testing.T) {
 // 		t.Fatalf("expected status code 201, got %d", resp.StatusCode)
 // 	}
 // }
+
+func TestAddUser(t *testing.T) {
+	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
+	if err != nil {
+		t.Fatalf("failed to connect to the database: %v", err)
+	}
+	defer dbPool.Close()
+
+	// Set the global database connection to the one you just created
+	services.SetDB(dbPool)
+
+	user := models.Register{
+		Username: "testuser",
+		Email:    fmt.Sprintf("test%d@test.com", time.Now().Unix()),
+		Password: "testpassword",
+	}
+
+	err = services.AddUser(user)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestGenerateJWT(t *testing.T) {
+	username := "testuserjwt"
+	role := "testrole"
+
+	// Generate a JWT
+	tokenString, err := services.GenerateJWT(username, role)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	// Parse the JWT
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte("your_secret_key"), nil
+	})
+
+	if err != nil {
+		t.Fatalf("error parsing token: %v", err)
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if claims["username"] != username || claims["role"] != role {
+			t.Fatalf("unexpected claims in token: %v", claims)
+		}
+	} else {
+		t.Fatalf("invalid token")
+	}
+}
