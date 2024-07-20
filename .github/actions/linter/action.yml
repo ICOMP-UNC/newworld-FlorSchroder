@@ -9,7 +9,7 @@ runs:
   using: 'composite'
   steps:
     - name: golangci-lint
-        uses: golangci/golangci-lint-action@v5
-        with:
-          # NOTE: Keep this in sync with the version from .golangci.yml
-          version: v1.57.1
+      uses: golangci/golangci-lint-action@v5
+      with:
+        # NOTE: Keep this in sync with the version from .golangci.yml
+        version: v1.57.1
