@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"encoding/json"
+	"io"
+	"net/http"
 	"strconv"
 
 	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/models"
@@ -57,30 +60,6 @@ func Login(c *fiber.Ctx) error {
 	return c.SendString(token)
 }
 
-// AddOffer godoc
-// @Summary Add offer
-// @Description add a new offer
-// @Tags auth
-// @Accept  json
-// @Produce  json
-// @Param Offer body models.Offer true "Offer details"
-// @Success 200 {string} string "JWT"
-// @Failure 500 {string} string "Bad server"
-// @Failure 400 {string} string "Bad request"
-// @Router /auth/offer [post]
-func AddOffer(c *fiber.Ctx) error {
-	var offer models.Offer
-	if err := c.BodyParser(&offer); err != nil {
-		return c.Status(400).SendString("Bad request")
-	}
-
-	if err := services.AddOffer(offer); err != nil {
-		return c.Status(500).SendString("Bad server")
-	}
-
-	return c.SendString("Offer added")
-}
-
 // GetOffers godoc
 // @Summary Get offers
 // @Description get all offers
@@ -93,16 +72,54 @@ func AddOffer(c *fiber.Ctx) error {
 // @Failure 401 {string} string "Unauthorized"
 // @Router /auth/offers [get]
 func GetOffers(c *fiber.Ctx) error {
-	jwtToken := c.Get("Authorization")
-	if jwtToken == "" {
-		return c.Status(401).SendString("Unauthorized")
+	resp, err := http.Get("http://localhost:8080/supplies")
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Error getting supplies",
+		})
+	}
+	defer resp.Body.Close()
+
+	// Read response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Error reading response body",
+		})
 	}
 
-	offers, err := services.GetOffers(jwtToken)
-	if err != nil {
-		return c.Status(500).SendString("Bad server")
+	// Parse JSON
+	var offers map[string]models.OfferWithID
+	if err := json.Unmarshal(body, &offers); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Error unmarshaling JSON",
+		})
 	}
-	return c.Status(200).JSON(offers)
+
+	// Add offers to database
+	for _, offer := range offers {
+		if err := services.AddOffer(offer); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Error adding offer to database",
+			})
+		}
+	}
+
+	jwtToken := c.Get("Authorization")
+	//println("GetOffers " + jwtToken)
+	if jwtToken == "" {
+		return c.Status(401).JSON(models.Message{Status: "Unauthorized"})
+	}
+
+	//println("GetOffers " + jwtToken)
+
+	// Get offers from database
+	offers2, err := services.GetOffers(jwtToken)
+	if err != nil {
+		return c.Status(500).JSON(models.Message{Status: "Bad server"})
+	}
+
+	return c.Status(200).JSON(offers2)
 }
 
 // Checkout godoc

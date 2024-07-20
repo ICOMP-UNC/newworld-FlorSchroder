@@ -14,7 +14,6 @@ func InitRoutes(app *fiber.App, dbPool *pgxpool.Pool) {
 
 	app.Post("/auth/register", handlers.Register)
 	app.Post("/auth/login", handlers.Login)
-	app.Post("/auth/offer", handlers.AddOffer)
 	app.Post("/auth/checkout", handlers.Checkout)
 
 	app.Patch("/auth/order/:id", handlers.UpdateOrderStatus)

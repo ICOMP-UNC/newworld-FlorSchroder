@@ -165,52 +165,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/offer": {
-            "post": {
-                "description": "add a new offer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Add offer",
-                "parameters": [
-                    {
-                        "description": "Offer details",
-                        "name": "Offer",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Offer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "JWT",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Bad server",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/auth/offers": {
             "get": {
                 "description": "get all offers",
@@ -444,37 +398,6 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "number"
-                }
-            }
-        },
-        "github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Offer": {
-            "type": "object",
-            "required": [
-                "category",
-                "name",
-                "price",
-                "quantity"
-            ],
-            "properties": {
-                "category": {
-                    "description": "Category of the offer",
-                    "type": "string",
-                    "example": "food"
-                },
-                "name": {
-                    "description": "Name of the offer",
-                    "type": "string",
-                    "example": "meat"
-                },
-                "price": {
-                    "description": "Price of the offer",
-                    "type": "number",
-                    "example": 10.5
-                },
-                "quantity": {
-                    "description": "Quantity of the offer",
-                    "type": "integer",
-                    "example": 10
                 }
             }
         },

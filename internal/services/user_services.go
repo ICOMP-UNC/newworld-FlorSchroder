@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+	"strconv"
 	"time"
 
 	"github.com/ICOMP-UNC/newworld-FlorSchroder/internal/models"
@@ -77,35 +79,21 @@ func GenerateJWT(username string, role string) (string, error) {
 	return tokenString, nil
 }
 
-func AddOffer(offer models.Offer) error {
+func AddOffer(offer models.OfferWithID) error {
 	if dbPool == nil {
 		return errors.New("database pool is not initialized")
 	}
 
-	if offer.Quantity <= 0 || offer.Price <= 0 {
-		return errors.New("quantity and price must be greater than 0")
-	}
+	ctx := context.Background()
 
-	validCategories := []string{"medicine", "food", "ammo"}
-	if !contains(validCategories, offer.Category) {
-		return errors.New("category must be either 'medicine', 'food', or 'ammo'")
-	}
-
-	_, err := dbPool.Exec(context.Background(), "INSERT INTO offers (name, quantity, price, category) VALUES ($1, $2, $3, $4)", offer.Name, offer.Quantity, offer.Price, offer.Category)
+	query := `INSERT INTO offers (id, name, quantity, price, category) VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT (id) DO UPDATE SET quantity = offers.quantity + $3, price = $4`
+	_, err := dbPool.Exec(ctx, query, strconv.Itoa(offer.ID), offer.Name, offer.Quantity, fmt.Sprintf("%f", offer.Price), offer.Category)
 	if err != nil {
+		log.Printf("Error inserting offer into database: %v", err)
 		return err
 	}
-
 	return nil
-}
-
-func contains(slice []string, item string) bool {
-	for _, a := range slice {
-		if a == item {
-			return true
-		}
-	}
-	return false
 }
 
 func GetOffers(jwtString string) ([]models.OfferWithID, error) {
@@ -116,6 +104,7 @@ func GetOffers(jwtString string) ([]models.OfferWithID, error) {
 	// Check the JWT using the checkJWT function
 	_, err := checkJWT(jwtString)
 	if err != nil {
+		println("Error:", err)
 		return nil, err
 	}
 
@@ -135,11 +124,14 @@ func GetOffers(jwtString string) ([]models.OfferWithID, error) {
 		offers = append(offers, offer)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return offers, nil
 }
 
 func Checkout(order models.Order, jwt string) (models.Message, error) {
-	fmt.Println("Starting Checkout")
 
 	if dbPool == nil {
 		fmt.Println("Error: database pool is not initialized")
@@ -205,22 +197,32 @@ func Checkout(order models.Order, jwt string) (models.Message, error) {
 }
 
 func checkJWT(jwtString string) (jwt.MapClaims, error) {
+
 	token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			println("Error: unexpected signing method")
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte("your_secret_key"), nil
 	})
 
 	if err != nil {
+		println("Error:", err)
 		return nil, err
+	}
+
+	if token == nil {
+		println("Error: token is nil")
+		return nil, errors.New("token is nil")
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// Si el token es válido, devuelve las claims
+		println("JWT is valid")
 		return claims, nil
 	} else {
 		// Si el token no es válido, devuelve un error
+		println("Error: invalid token")
 		return nil, errors.New("invalid token")
 	}
 }

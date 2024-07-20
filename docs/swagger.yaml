@@ -23,30 +23,6 @@ definitions:
       total:
         type: number
     type: object
-  github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Offer:
-    properties:
-      category:
-        description: Category of the offer
-        example: food
-        type: string
-      name:
-        description: Name of the offer
-        example: meat
-        type: string
-      price:
-        description: Price of the offer
-        example: 10.5
-        type: number
-      quantity:
-        description: Quantity of the offer
-        example: 10
-        type: integer
-    required:
-    - category
-    - name
-    - price
-    - quantity
-    type: object
   github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Order:
     type: object
   github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.OrderItem:
@@ -181,36 +157,6 @@ paths:
           schema:
             type: string
       summary: Login
-      tags:
-      - auth
-  /auth/offer:
-    post:
-      consumes:
-      - application/json
-      description: add a new offer
-      parameters:
-      - description: Offer details
-        in: body
-        name: Offer
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Offer'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: JWT
-          schema:
-            type: string
-        "400":
-          description: Bad request
-          schema:
-            type: string
-        "500":
-          description: Bad server
-          schema:
-            type: string
-      summary: Add offer
       tags:
       - auth
   /auth/offers:
