@@ -11,9 +11,11 @@ runs:
     - name: Print working directory
       shell: bash
       run: pwd
+    - name: List files in target directory
+      shell: bash
+      run: ls ${{ inputs.target-directory }}
     - name: Build
       shell: bash
       run: |
         cd ${{ inputs.target-directory }}
-        pwd
         go build -v .
