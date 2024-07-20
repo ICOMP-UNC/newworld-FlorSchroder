@@ -16,6 +16,7 @@ runs:
         echo "::set-output name=coverage::$coverage"
 
     - name: Check Coverage
+      shell: bash
       run: |
         coverage=${{ steps.coverage.outputs.coverage }}
         if (( $(echo "$coverage > 20" | bc -l) )); then
@@ -25,3 +26,4 @@ runs:
           echo "Coverage is not greater than 20%"
           exit 1
         fi
+        
