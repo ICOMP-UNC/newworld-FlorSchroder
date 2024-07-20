@@ -8,6 +8,9 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Print working directory
+      shell: bash
+      run: pwd
     - name: Build
       shell: bash
       run: |
