@@ -17,5 +17,5 @@ runs:
     - name: Build
       shell: bash
       run: |
-        cd ${{ inputs.target-directory }}
+        cd cmd
         go build -v .
