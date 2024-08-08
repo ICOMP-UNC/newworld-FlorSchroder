@@ -3,6 +3,7 @@ package tests
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"testing"
 	"time"
@@ -21,6 +22,19 @@ func getDatabaseURL() string {
 	if dbURL == "" {
 		dbURL = "postgres://florxha:mydb123@localhost:5432/florxha_tp3"
 	}
+
+	// create users table
+	dbPool, err := pgxpool.Connect(context.Background(), dbURL)
+	if err != nil {
+		log.Fatalf("failed to connect to the database: %v", err)
+	}
+	defer dbPool.Close()
+
+	_, err = dbPool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS users (username TEXT, email TEXT, password TEXT, jwt TEXT, role TEXT)")
+	if err != nil {
+		log.Fatalf("failed to create users table: %v", err)
+	}
+
 	return dbURL
 }
 
