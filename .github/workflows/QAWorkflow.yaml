@@ -16,7 +16,7 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_USER: florxha
-          POSTGRES_PASSWORD: your_password
+          POSTGRES_PASSWORD: mydb123
           POSTGRES_DB: florxha_tp3
         options: >-
           --health-cmd "pg_isready -U florxha -d florxha_tp3"
