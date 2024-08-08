@@ -1,0 +1,295 @@
+basePath: /
+definitions:
+  github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Login:
+    properties:
+      email:
+        example: example@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+      username:
+        example: johndoe
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Message:
+    properties:
+      status:
+        type: string
+      total:
+        type: number
+    type: object
+  github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Order:
+    type: object
+  github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.OrderItem:
+    properties:
+      product_id:
+        example: 1
+        type: integer
+      quantity:
+        example: 10
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Register:
+    properties:
+      email:
+        example: example@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+      username:
+        example: johndoe
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: you@example.com
+  description: This is a sample server.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /admin/dashboard:
+    get:
+      consumes:
+      - application/json
+      description: get dashboard data
+      parameters:
+      - description: JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dashboard data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Get dashboard
+      tags:
+      - admin
+  /auth/checkout:
+    post:
+      consumes:
+      - application/json
+      description: checkout
+      parameters:
+      - description: JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order details
+        in: body
+        name: Order
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order placed
+          schema:
+            $ref: '#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Message'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Checkout
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: login a user
+      parameters:
+      - description: User login details
+        in: body
+        name: Login
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Login
+      tags:
+      - auth
+  /auth/offers:
+    get:
+      consumes:
+      - application/json
+      description: get all offers
+      parameters:
+      - description: JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Get offers
+      tags:
+      - auth
+  /auth/order/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: update order status
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order status
+        in: body
+        name: status
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order status updated
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Update order status
+      tags:
+      - auth
+  /auth/orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get order status
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order status
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Get order status
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: register a new user
+      parameters:
+      - description: User registration details
+        in: body
+        name: Register
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ICOMP-UNC_newworld-FlorSchroder_internal_models.Register'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User added
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Bad server
+          schema:
+            type: string
+      summary: Register
+      tags:
+      - auth
+swagger: "2.0"

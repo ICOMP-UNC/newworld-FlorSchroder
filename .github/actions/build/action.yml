@@ -4,10 +4,18 @@ inputs:
   target-directory:
     description: 'The directory containing the Go code to be linted'
     required: true
-    default: '.'
+    default: 'cmd'
 runs:
   using: 'composite'
   steps:
+    - name: Print working directory
+      shell: bash
+      run: pwd
+    - name: List files in target directory
+      shell: bash
+      run: ls ${{ inputs.target-directory }}
     - name: Build
       shell: bash
-      run: go build -v ${{ inputs.target-directory }}
+      run: |
+        cd cmd
+        go build -v .
