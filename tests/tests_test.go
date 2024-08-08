@@ -15,7 +15,6 @@ import (
 )
 
 var testEmail string
-var testToken string
 
 func getDatabaseURL() string {
 	// Try to get the DATABASE_URL from the environment, fall back to localhost if not set
