@@ -15,6 +15,7 @@ import (
 )
 
 var testEmail string
+var testToken string
 
 func getDatabaseURL() string {
 	// Try to get the DATABASE_URL from the environment, fall back to localhost if not set
@@ -171,7 +172,7 @@ func TestAddOffer(t *testing.T) {
 	services.SetDB(dbPool)
 
 	offer := models.OfferWithID{
-		ID:       1,
+		ID:       11,
 		Name:     "testoffer",
 		Quantity: 10,
 		Category: "testcategory",
@@ -181,5 +182,33 @@ func TestAddOffer(t *testing.T) {
 	err = services.AddOffer(offer)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestGetOffers(t *testing.T) {
+	// generate a token
+	username := "testuserjwt"
+	role := "testrole"
+
+	tokenString, err := services.GenerateJWT(username, role)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	dbPool, err := pgxpool.Connect(context.Background(), getDatabaseURL())
+	if err != nil {
+		t.Fatalf("failed to connect to the database: %v", err)
+	}
+	defer dbPool.Close()
+
+	services.SetDB(dbPool)
+
+	offers, err := services.GetOffers(tokenString)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if len(offers) == 0 {
+		t.Fatalf("expected at least one offer, got none")
 	}
 }
