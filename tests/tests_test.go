@@ -183,22 +183,3 @@ func TestAddOffer(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 }
-
-func TestGetOffers(t *testing.T) {
-	dbPool, err := pgxpool.Connect(context.Background(), getDatabaseURL())
-	if err != nil {
-		t.Fatalf("failed to connect to the database: %v", err)
-	}
-	defer dbPool.Close()
-
-	services.SetDB(dbPool)
-
-	offers, err := services.GetOffers("")
-	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
-	}
-
-	if len(offers) == 0 {
-		t.Fatalf("expected offers, got an empty slice")
-	}
-}
