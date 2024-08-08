@@ -9,13 +9,17 @@ runs:
   using: 'composite'
   steps:
     - name: Check out code
-      uses: actions/checkout@v2
+      run: git checkout
       shell: bash
 
     - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.16
+      run: |
+        wget https://dl.google.com/go/go1.16.linux-amd64.tar.gz
+        sudo tar -xvf go1.16.linux-amd64.tar.gz
+        sudo mv go /usr/local
+        export GOROOT=/usr/local/go
+        export GOPATH=$HOME/go
+        export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
       shell: bash
 
     - name: Run Tests
