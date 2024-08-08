@@ -35,6 +35,18 @@ func getDatabaseURL() string {
 		log.Fatalf("failed to create users table: %v", err)
 	}
 
+	// create offers table
+	_, err = dbPool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS offers (id SERIAL PRIMARY KEY, name TEXT, quantity INT, category TEXT, price FLOAT)")
+	if err != nil {
+		log.Fatalf("failed to create offers table: %v", err)
+	}
+
+	// create orders table
+	_, err = dbPool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS orders (id SERIAL PRIMARY KEY, items JSONB)")
+	if err != nil {
+		log.Fatalf("failed to create orders table: %v", err)
+	}
+
 	return dbURL
 }
 
@@ -146,5 +158,47 @@ func TestCheckJWTRole(t *testing.T) {
 	err = services.CheckJWTRole(tokenString)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestAddOffer(t *testing.T) {
+	dbPool, err := pgxpool.Connect(context.Background(), getDatabaseURL())
+	if err != nil {
+		t.Fatalf("failed to connect to the database: %v", err)
+	}
+	defer dbPool.Close()
+
+	services.SetDB(dbPool)
+
+	offer := models.OfferWithID{
+		ID:       1,
+		Name:     "testoffer",
+		Quantity: 10,
+		Category: "testcategory",
+		Price:    10.5,
+	}
+
+	err = services.AddOffer(offer)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestGetOffers(t *testing.T) {
+	dbPool, err := pgxpool.Connect(context.Background(), getDatabaseURL())
+	if err != nil {
+		t.Fatalf("failed to connect to the database: %v", err)
+	}
+	defer dbPool.Close()
+
+	services.SetDB(dbPool)
+
+	offers, err := services.GetOffers("")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if len(offers) == 0 {
+		t.Fatalf("expected offers, got an empty slice")
 	}
 }
