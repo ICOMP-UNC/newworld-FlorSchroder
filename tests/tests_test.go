@@ -3,6 +3,7 @@ package tests
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -14,14 +15,22 @@ import (
 
 var testEmail string
 
+func getDatabaseURL() string {
+	// Try to get the DATABASE_URL from the environment, fall back to localhost if not set
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		dbURL = "postgres://florxha:mydb123@localhost:5432/florxha_tp3"
+	}
+	return dbURL
+}
+
 func TestAddUser(t *testing.T) {
-	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
+	dbPool, err := pgxpool.Connect(context.Background(), getDatabaseURL())
 	if err != nil {
 		t.Fatalf("failed to connect to the database: %v", err)
 	}
 	defer dbPool.Close()
 
-	// Set the global database connection to the one you just created
 	services.SetDB(dbPool)
 
 	testEmail = fmt.Sprintf("test%d@test.com", time.Now().Unix())
@@ -39,13 +48,12 @@ func TestAddUser(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
+	dbPool, err := pgxpool.Connect(context.Background(), getDatabaseURL())
 	if err != nil {
 		t.Fatalf("failed to connect to the database: %v", err)
 	}
 	defer dbPool.Close()
 
-	// Set the global database connection to the one you just created
 	services.SetDB(dbPool)
 
 	user := models.Login{
@@ -68,13 +76,11 @@ func TestGenerateJWT(t *testing.T) {
 	username := "testuserjwt"
 	role := "testrole"
 
-	// Generate a JWT
 	tokenString, err := services.GenerateJWT(username, role)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	// Parse the JWT
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -99,13 +105,11 @@ func TestCheckJWT(t *testing.T) {
 	username := "testuserjwt"
 	role := "testrole"
 
-	// Generate a JWT
 	tokenString, err := services.GenerateJWT(username, role)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	// Check the JWT
 	claims, err := services.CheckJWT(tokenString)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
@@ -120,13 +124,11 @@ func TestCheckJWTRole(t *testing.T) {
 	username := "testuserjwt"
 	role := "admin"
 
-	// Generate a JWT
 	tokenString, err := services.GenerateJWT(username, role)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	// Check the JWT role
 	err = services.CheckJWTRole(tokenString)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
