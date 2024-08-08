@@ -144,3 +144,8 @@ In browser to check endpoints:
 ```
 http://127.0.0.1:3000/swagger/index.html
 ```
+
+## Tests
+```
+go test -coverprofile=coverage.out ./...
+```

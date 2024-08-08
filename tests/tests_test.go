@@ -82,6 +82,8 @@ import (
 // 	}
 // }
 
+var testEmail string
+
 func TestAddUser(t *testing.T) {
 	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
 	if err != nil {
@@ -92,9 +94,11 @@ func TestAddUser(t *testing.T) {
 	// Set the global database connection to the one you just created
 	services.SetDB(dbPool)
 
+	testEmail = fmt.Sprintf("test%d@test.com", time.Now().Unix())
+
 	user := models.Register{
 		Username: "testuser",
-		Email:    fmt.Sprintf("test%d@test.com", time.Now().Unix()),
+		Email:    testEmail,
 		Password: "testpassword",
 	}
 
@@ -102,6 +106,32 @@ func TestAddUser(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
+}
+
+func TestLogin(t *testing.T) {
+	dbPool, err := pgxpool.Connect(context.Background(), "postgres://florxha:mydb123@localhost:5432/florxha_tp3")
+	if err != nil {
+		t.Fatalf("failed to connect to the database: %v", err)
+	}
+	defer dbPool.Close()
+
+	// Set the global database connection to the one you just created
+	services.SetDB(dbPool)
+
+	user := models.Login{
+		Email:    testEmail,
+		Password: "testpassword",
+	}
+
+	token, err := services.Login(user)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if token == "" {
+		t.Fatalf("expected a token, got an empty string")
+	}
+
 }
 
 func TestGenerateJWT(t *testing.T) {
@@ -132,5 +162,43 @@ func TestGenerateJWT(t *testing.T) {
 		}
 	} else {
 		t.Fatalf("invalid token")
+	}
+}
+
+func TestCheckJWT(t *testing.T) {
+	username := "testuserjwt"
+	role := "testrole"
+
+	// Generate a JWT
+	tokenString, err := services.GenerateJWT(username, role)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	// Check the JWT
+	claims, err := services.CheckJWT(tokenString)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if claims["username"] != username || claims["role"] != role {
+		t.Fatalf("unexpected claims in token: %v", claims)
+	}
+}
+
+func TestCheckJWTRole(t *testing.T) {
+	username := "testuserjwt"
+	role := "admin"
+
+	// Generate a JWT
+	tokenString, err := services.GenerateJWT(username, role)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	// Check the JWT role
+	err = services.CheckJWTRole(tokenString)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
 	}
 }

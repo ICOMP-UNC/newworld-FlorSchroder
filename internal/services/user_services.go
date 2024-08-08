@@ -102,7 +102,7 @@ func GetOffers(jwtString string) ([]models.OfferWithID, error) {
 	}
 
 	// Check the JWT using the checkJWT function
-	_, err := checkJWT(jwtString)
+	_, err := CheckJWT(jwtString)
 	if err != nil {
 		println("Error:", err)
 		return nil, err
@@ -139,7 +139,7 @@ func Checkout(order models.Order, jwt string) (models.Message, error) {
 	}
 
 	// check valid JWT
-	claims, err := checkJWT(jwt)
+	claims, err := CheckJWT(jwt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return models.Message{}, err
@@ -196,7 +196,7 @@ func Checkout(order models.Order, jwt string) (models.Message, error) {
 	return models.Message{Total: total, Status: "preparing"}, nil
 }
 
-func checkJWT(jwtString string) (jwt.MapClaims, error) {
+func CheckJWT(jwtString string) (jwt.MapClaims, error) {
 
 	token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -227,8 +227,8 @@ func checkJWT(jwtString string) (jwt.MapClaims, error) {
 	}
 }
 
-func checkJWTRole(jwtString string) error {
-	mapClaims, err := checkJWT(jwtString)
+func CheckJWTRole(jwtString string) error {
+	mapClaims, err := CheckJWT(jwtString)
 	if err != nil {
 		return err
 	}
@@ -253,7 +253,7 @@ func GetDashboard(jwt string) (models.Dashboard, error) {
 	}
 
 	// check valid JWT
-	err := checkJWTRole(jwt)
+	err := CheckJWTRole(jwt)
 	if err != nil {
 		return models.Dashboard{}, err
 	}
@@ -283,7 +283,7 @@ func GetOrderStatus(id int, jwt string) (string, error) {
 	}
 
 	// check valid JWT and role
-	err := checkJWTRole(jwt)
+	err := CheckJWTRole(jwt)
 	if err != nil {
 		return "", err
 	}
@@ -303,7 +303,7 @@ func UpdateOrderStatus(id int, status string, jwt string) error {
 	}
 
 	// check valid JWT and role
-	err := checkJWTRole(jwt)
+	err := CheckJWTRole(jwt)
 	if err != nil {
 		return err
 	}
