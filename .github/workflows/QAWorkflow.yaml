@@ -8,15 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: florxha
-          POSTGRES_PASSWORD: mydb123
-          POSTGRES_DB: florxha_tp3
-        ports: ['5432:5432']
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Checkout repository

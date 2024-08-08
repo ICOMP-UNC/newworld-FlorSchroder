@@ -1,5 +1,5 @@
-name: 'Tests'
-description: 'Run tests with a PostgreSQL service'
+name: Tests
+description: Run testing on Go code
 inputs:
   target-directory:
     description: 'The directory containing the Go code to be tested'
@@ -8,27 +8,22 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Check out code
-      run: git checkout
+    - name: Run Tests with Coverage
       shell: bash
-
-    - name: Set up Go
+      id: coverage
       run: |
-        wget https://dl.google.com/go/go1.16.linux-amd64.tar.gz
-        sudo tar -xvf go1.16.linux-amd64.tar.gz
-        sudo mv go /usr/local
-        export GOROOT=/usr/local/go
-        export GOPATH=$HOME/go
-        export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-      shell: bash
+        go test -coverprofile=coverage.out ./...
+        coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}')
+        echo "::set-output name=coverage::${coverage::-1}"
 
-    - name: Run Tests
-      run: |
-        go test -v ${{ inputs.target-directory }}
-      env:
-        DB_HOST: localhost
-        DB_USER: florxha
-        DB_PASSWORD: mydb123
-        DB_NAME: florxha_tp3
-        DB_PORT: 5432
+    - name: Check Coverage
       shell: bash
+      run: |
+        coverage=${{ steps.coverage.outputs.coverage }}
+        if (( $(echo "$coverage > 20" | bc -l) )); then
+          echo "Coverage is greater than 20%"
+          exit 0
+        else
+          echo "Coverage is not greater than 20%"
+          exit 1
+        fi
