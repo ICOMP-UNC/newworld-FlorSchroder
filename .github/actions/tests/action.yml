@@ -12,8 +12,9 @@ runs:
       shell: bash
       id: coverage
       run: |
-        coverage=$(go test -cover fmt | awk '/coverage: ([0-9.]+)%/{print $NF}')
-        echo "::set-output name=coverage::$coverage"
+        go test -coverprofile=coverage.out ./...
+        coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}')
+        echo "::set-output name=coverage::${coverage::-1}"
 
     - name: Check Coverage
       shell: bash
@@ -26,4 +27,3 @@ runs:
           echo "Coverage is not greater than 20%"
           exit 1
         fi
-        
